@@ -6,7 +6,7 @@
 --INSERT INTO boards (id)
 --VALUES ('a1b2c3d4-6b5f-11ec-90d6-0242ac120004');
 
-
+/*
 
 -- Insert into Game
 INSERT INTO games (id, gamestate, current_player_id)
@@ -189,3 +189,4 @@ INSERT INTO players (id, name, is_logged_in, position_x, position_y, game_id, ti
 VALUES ('f8f9a0b1-6b5f-11ec-90d6-0242ac120004', 'Player 2', TRUE, -1, -1, NULL,
         NULL, NULL);
 
+*/

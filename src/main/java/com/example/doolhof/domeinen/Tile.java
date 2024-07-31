@@ -40,6 +40,9 @@ public class Tile {
     @Column(name = "is_wall_l_bottom")
     private boolean isWallLBottom;
 
+
+    // Todo: hieronder properties kunnen problemen zorgen met veel op veel relatie met Game
+    // alles naar tussenentiteit verplaatsen
     @Column(name = "POSITION_X")
     private int positionX;
 

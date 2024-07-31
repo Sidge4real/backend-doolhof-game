@@ -25,11 +25,11 @@ public class PlayerService {
     }
 
     public Player addPlayer(Player player) {
-        Player player1 = playerRepository.findByName(player.getName());
-        if (!player1.getName().isEmpty())
+        Optional<Player> existingPlayer  = playerRepository.findByName(player.getName());
+        if (existingPlayer.isPresent())
             throw new AlreadyExistException("Player with name " + player.getName() + " already exists.");
         player.setLoggedIn(true);
-        return player;
+        return playerRepository.save(player);
     }
 
     public void removePlayer(UUID playerId) {
@@ -37,6 +37,7 @@ public class PlayerService {
         if (player.isEmpty()) {
             throw new NotFoundException("Player does not exist");
         }
+        playerRepository.delete(player.get());
     }
 
     public void updatePlayer(Player newPlayer) {
@@ -46,4 +47,14 @@ public class PlayerService {
         }
         currentPlayer.get().setName(newPlayer.getName());
     }
+
+    public Set<String> getInvites(UUID player_id){
+        Optional<Player> player = playerRepository.findById(player_id);
+        if(player.isEmpty()){
+            throw new NotFoundException("Speler bestaat niet");
+        }
+
+        return player.get().getInvites();
+    }
+
 }

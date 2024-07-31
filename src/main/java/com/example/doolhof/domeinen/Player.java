@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity(name = "players")
@@ -29,8 +30,11 @@ public class Player {
     @JoinColumn(name = "game_id")
     private Game game;
 
-
+    @Column(name = "name", unique = true)
     private String name;
+
+    // Afwerken? Zie oo PlayerActionRequest
+    private List<Step> steps;
 
     @Column()
     private boolean isLoggedIn;
@@ -41,6 +45,13 @@ public class Player {
     @Column(name = "POSITION_Y")
     private int positionY;
     // current card  )-> schat die we zoeken
+
+
+    // lijst van verschillende gameId die speler kan deelnemen
+    @ElementCollection
+    @CollectionTable(name = "invites", joinColumns = @JoinColumn(name = "my_entity_id"))
+    @Column(name = "invite", unique = true)
+    private Set<String> invites;
 
 
     public List<Card> getCards() {
@@ -113,5 +124,13 @@ public class Player {
 
     public void setLoggedIn(boolean loggedIn) {
         isLoggedIn = loggedIn;
+    }
+
+    public Set<String> getInvites() {
+        return invites;
+    }
+
+    public void setInvites(Set<String> invites) {
+        this.invites = invites;
     }
 }

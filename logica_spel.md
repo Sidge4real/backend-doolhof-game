@@ -1,0 +1,17 @@
+- User kan registreren.
+- User kan inloggen.
+- User kan meerdere games spelen
+  - 1 user heeft meerdere relatie met player
+  - 1 player heeft relatie met 1 game 
+  - player worden nodige informatie bijgehouden over toestand van een bepaalde game
+- User kan spel starten 
+  - player wordt gemaakt, die wordt gelinkt met deze user
+  - game wordt gemaakt, game wordt gelinkt met player
+    - 1 game heeft meerdere relatie met player
+    - tiles, cards worden toegekend aan deze game
+- Player kan een user uitnodigen om te spelen
+  - Een endpoint gebruiken  
+    - Emailadres, deze playerId en nieuwe gemaakte gameId meegeven
+    - out scope: mail verzenden naar uitgenodigde
+    - user ziet lijst uitnodiging
+      - kan accepteren indien niet uitnodigin verwijderen uit de lijst
