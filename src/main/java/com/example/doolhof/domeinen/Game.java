@@ -17,17 +17,14 @@ public class Game {
     @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Player> players;
 
-    // één game heeft één bord
-    //@OneToOne(cascade = CascadeType.ALL)
-    //private Board board;
+
+    @Column(nullable = true)
+    private int round;
 
 
     @Enumerated(EnumType.STRING)
     private GameState gamestate;
 
-    // één game heeft meerdere kaarten
-    // @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    // private List<Card> cards;
 
     @ManyToMany
     @JoinTable(
@@ -37,24 +34,14 @@ public class Game {
     )
     private Set<Card> cards;
 
-    // één game heeft meerdere tegels
-    //@OneToMany(mappedBy = "game", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    //private List<Tile> tiles;
-    @ManyToMany
-    @JoinTable(
-            name = "game_tiles",
-            joinColumns = @JoinColumn(name = "game_id"),
-            inverseJoinColumns = @JoinColumn(name = "tile_id")
-    )
-    private Set<Tile> tiles;
+
+    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Tile> tiles;
 
 
     // één game heeft één speler aan de beurt
-    // speler aan de beurt
     @OneToOne
     private Player currentPlayer;
-
-    // Board  -> tiles
 
     public Game() {
     }
@@ -76,37 +63,14 @@ public class Game {
     }
 
 
-    public Set<Tile> getTiles() {
-        return tiles;
-    }
-
-    public void setTiles(Set<Tile> tiles) {
-        this.tiles = tiles;
-    }
-
-    /*
     public List<Tile> getTiles() {
-        return this.tiles;
+        return tiles;
     }
 
     public void setTiles(List<Tile> tiles) {
         this.tiles = tiles;
     }
 
-     */
-
-
-        /*
-    public Board getBoard(){
-        return this.board;
-    }
-
-    // is dit nodig? nog te bekijken
-    public void setBoard(Board board){
-        this.board = board;
-    }
-
-         */
 
     public GameState getGameState() {
         return this.gamestate;
@@ -133,5 +97,11 @@ public class Game {
         return id;
     }
 
+    public int getRound() {
+        return round;
+    }
 
+    public void setRound(int round) {
+        this.round = round;
+    }
 }

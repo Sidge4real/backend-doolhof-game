@@ -2,6 +2,7 @@ package com.example.doolhof.domeinen;
 
 import java.util.UUID;
 
+
 public class Step {
 
     // relatie nodig met Speler?
@@ -44,3 +45,5 @@ public class Step {
         this.endY = endY;
     }
 }
+
+

@@ -19,12 +19,14 @@ public class GameService {
     private final PlayerRepository playerRepository;
     private final CardRepository cardRepository;
     private final TileRepository tileRepository;
+    private final TileService tileService;
 
-    public GameService(GameRepository gameRepository, PlayerRepository playerRepository, CardRepository cardRepository, TileRepository tileRepository) {
+    public GameService(GameRepository gameRepository, PlayerRepository playerRepository, CardRepository cardRepository, TileRepository tileRepository, TileService tileService) {
         this.gameRepository = gameRepository;
         this.playerRepository = playerRepository;
         this.cardRepository = cardRepository;
         this.tileRepository = tileRepository;
+        this.tileService = tileService;
     }
 
     // onvolledig, zonder controle
@@ -45,12 +47,16 @@ public class GameService {
             throw new NotFoundException("Player does not exist");
         }
 
-        //Todo: game_tiles entiteit gebruiken en niet Tile want alles is naar daar gezet
-        List<Tile> tilelist = tileRepository.findAll();
-        Set<Tile> tiles = new HashSet<>(tilelist);
+        List<Tile> tiles = tileService.createTiles();
+
+        if(tileService.checkup()){
+            tileService.reset();
+        }
+        else{
+            throw new RuntimeException("Er treedte een probleem op in het finaliseren van de tegels");
+        }
 
         game.setTiles(tiles);
-
 
         List<Player> players = new ArrayList<>();
         players.add(currentPlayer.get());
@@ -87,8 +93,7 @@ public class GameService {
         if(!sender.equals(players.get(0))){
            throw new RuntimeException("Speler is niet de admin van de game!");
         }
-        // Todo: hoe kunnen we iemand zoeken als elke speler wordt verwijderd na het uitloggen
-        // Todo: domeinmodel opnieuw alles overlopen
+
         Optional<Player> reqInvitee = playerRepository.findByName(invitee); // afwerken! Nog niet klaar...
         if(reqInvitee.isEmpty()){
             throw new NotFoundException("De uitgenodigde speler bestaat niet");
@@ -118,6 +123,7 @@ public class GameService {
 
         return game;
     }
+
 
     public Game startGame(UUID game_id, UUID player_id){
         Optional<Game> reqGame = gameRepository.findById(game_id);
@@ -155,7 +161,7 @@ public class GameService {
         }
 
         for (Player selectedPlayer : players) {
-            List<Card> playerCards = new ArrayList<>();
+            Set<Card> playerCards = new HashSet<>();
             for (int i = 0; i < cardsPerPlayer; i++) {
                 playerCards.add(cardList.remove(0));
             }
@@ -164,12 +170,15 @@ public class GameService {
         gameRepository.save(game);
         return game;
     }
+
+
+
     public Game takeAStep(UUID game_id, UUID player_id, List<Step> steps){
         Optional<Game> reqGame = gameRepository.findById(game_id);
         Optional<Player> reqPlayer = playerRepository.findById(player_id);
 
         if(reqGame.isEmpty()){
-            throw new NotFoundException("spel nie gevonden");
+            throw new NotFoundException("spel niet gevonden");
         }
         if(reqPlayer.isEmpty()){
             throw new NotFoundException("speler niet gevonden");
@@ -183,11 +192,17 @@ public class GameService {
                 throw new NotAuthorizedException("Speler neemt geen deel aan het spel!");
             }
         }
+        if(game.getRound() <= player.getLatestRoundPlayed())
+        {
+            throw new NotAuthorizedException("Speler heeft ronde al gespeeeld");
+        }
         // controle mag die stap gedaan worden?
         for(Step step : steps){
 
         }
 
+        return null;
     }
+
 
 }

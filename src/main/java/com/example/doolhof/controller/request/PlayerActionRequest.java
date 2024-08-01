@@ -1,10 +1,10 @@
 package com.example.doolhof.controller.request;
 
-import com.example.doolhof.domeinen.Step;
 
 import java.util.List;
 import java.util.UUID;
 
+/*
 public class PlayerActionRequest {
     private UUID playerId;
     private List<Step> steps;
@@ -25,3 +25,5 @@ public class PlayerActionRequest {
         this.playerId = playerId;
     }
 }
+
+ */

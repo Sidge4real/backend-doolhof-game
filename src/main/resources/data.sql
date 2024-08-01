@@ -6,14 +6,17 @@
 --INSERT INTO boards (id)
 --VALUES ('a1b2c3d4-6b5f-11ec-90d6-0242ac120004');
 
-/*
 
+
+-- Spel moet altijd gemaakt worden via frontend
 -- Insert into Game
 INSERT INTO games (id, gamestate, current_player_id)
 VALUES ('f7c9b2f6-6b5f-11ec-90d6-0242ac120003', 'NOT_STARTED', NULL);
 INSERT INTO games (id, gamestate, current_player_id)
-VALUES ('a2b3c4d5-6b5f-11ec-90d6-0242ac120004', 'STARTED', NULL);
+VALUES ('a2b3c4d5-6b5f-11ec-90d6-0242ac120004', 'NOT_STARTED', NULL);
 
+
+--Treasure moet altijd beschikbaar zijn in databank
 INSERT INTO treasures (id, item)
 VALUES ('d5a7b8b0-6b5f-11ec-90d6-0242ac120003', 'Bezem');
 INSERT INTO treasures (id, item)
@@ -63,6 +66,7 @@ VALUES ('d5a7b8b0-6b5f-11ec-90d6-0242ac120025', 'koe');
 INSERT INTO treasures (id, item)
 VALUES ('d5a7b8b0-6b5f-11ec-90d6-0242ac120026', 'kip');
 
+-- Elke kaart moet gelinkt zijn met 1 treasure en zal beschikbaar moeten zijn in databank
 INSERT INTO cards (id, treasure_id) VALUES ('e8a1a2c6-1b6e-4b70-b5b8-d0987ec5b9d4', 'd5a7b8b0-6b5f-11ec-90d6-0242ac120003'); -- Bezem
 INSERT INTO cards (id, treasure_id) VALUES ('dc383a68-7e09-4dc6-96ec-f79d5c673b4d', 'd5a7b8b0-6b5f-11ec-90d6-0242ac120004'); -- Zak Goud
 INSERT INTO cards (id, treasure_id) VALUES ('0f71a85b-e042-4c2a-9a9a-bd9f9c1e6cf5', 'd5a7b8b0-6b5f-11ec-90d6-0242ac120005'); -- Schip
@@ -88,6 +92,8 @@ INSERT INTO cards (id, treasure_id) VALUES ('9b0692e1-477d-46f2-a44d-3a9b4b7b1d7
 INSERT INTO cards (id, treasure_id) VALUES ('4685b2d3-4a8a-4d2c-9f78-1e5a77b4fcf6', 'd5a7b8b0-6b5f-11ec-90d6-0242ac120025'); -- Koe
 INSERT INTO cards (id, treasure_id) VALUES ('3d98a4f1-4c62-4d58-94f7-cf85acb1345c', 'd5a7b8b0-6b5f-11ec-90d6-0242ac120026'); -- Kip
 
+
+--Tijdens het create van het game moeten kaarten gelinkt worden met deze bepaalde game
 INSERT INTO game_cards (game_id, card_id) VALUES ('f7c9b2f6-6b5f-11ec-90d6-0242ac120003', 'e8a1a2c6-1b6e-4b70-b5b8-d0987ec5b9d4'); -- Bezem
 INSERT INTO game_cards (game_id, card_id) VALUES ('f7c9b2f6-6b5f-11ec-90d6-0242ac120003', 'dc383a68-7e09-4dc6-96ec-f79d5c673b4d'); -- Zak Goud
 INSERT INTO game_cards (game_id, card_id) VALUES ('f7c9b2f6-6b5f-11ec-90d6-0242ac120003', '0f71a85b-e042-4c2a-9a9a-bd9f9c1e6cf5'); -- Schip
@@ -113,9 +119,9 @@ INSERT INTO game_cards (game_id, card_id) VALUES ('f7c9b2f6-6b5f-11ec-90d6-0242a
 INSERT INTO game_cards (game_id, card_id) VALUES ('f7c9b2f6-6b5f-11ec-90d6-0242ac120003', '4685b2d3-4a8a-4d2c-9f78-1e5a77b4fcf6'); -- Koe
 INSERT INTO game_cards (game_id, card_id) VALUES ('f7c9b2f6-6b5f-11ec-90d6-0242ac120003', '3d98a4f1-4c62-4d58-94f7-cf85acb1345c'); -- Kip
 
-
+--todo: moet nog bekijken of het tijdens het create of start van het game moet gelinkt worden aan een spel
 -- Invoegen van 20 CORNER tegels
-INSERT INTO tiles (id, path, is_wall_left, is_wall_l_right, is_wall_l_top, is_wall_l_bottom, position_x, position_y, treasure_id)
+INSERT INTO tiles (id, path, is_wall_left, is_wall_right, is_wall_top, is_wall_bottom, position_x, position_y, treasure_id)
 VALUES ('3f2e8f48-3b77-4394-8f4f-8b09b6f23fd5', 'CORNER', true, false, true, false, 0, 0, NULL),
        ('7d2519f2-b6a8-4d68-970b-d596b6e8e9eb', 'CORNER', true, false, false, true, 0, 7, NULL),
        ('de3b1bcb-b7f8-4dce-bc0b-579de65912f0', 'CORNER', false, true, true, false, 7, 0, NULL),
@@ -142,7 +148,7 @@ VALUES ('3f2e8f48-3b77-4394-8f4f-8b09b6f23fd5', 'CORNER', true, false, true, fal
        ('64d64ae2-1fd4-48f5-9cfd-9a2fa6ddbbcf', 'CORNER', true, false, true, false, -1, -1, NULL);
 
 -- Invoegen van 12 STRAIGHT tegels
-INSERT INTO tiles (id, path, is_wall_left, is_wall_l_right, is_wall_l_top, is_wall_l_bottom, position_x, position_y, treasure_id)
+INSERT INTO tiles (id, path, is_wall_left, is_wall_right, is_wall_top, is_wall_bottom, position_x, position_y, treasure_id)
 VALUES
     ('09cf3a3e-b79e-439d-8481-760dbfc2c3a8', 'STRAIGHT', false, false, true, true, -1, -1, NULL),
     ('a79860b7-1d05-44b7-8b24-469ac3e26062', 'STRAIGHT', false, false, true, true, -1, -1, NULL),
@@ -158,7 +164,7 @@ VALUES
     ('2b91b059-2f9d-43e4-9b39-2623d9a007d6', 'STRAIGHT', false, false, true, true, -1, -1, NULL);
 
 -- Invoegen van 18 CROSSPOINT tegels
-INSERT INTO tiles (id, path, is_wall_left, is_wall_l_right, is_wall_l_top, is_wall_l_bottom, position_x, position_y, treasure_id)
+INSERT INTO tiles (id, path, is_wall_left, is_wall_right, is_wall_top, is_wall_bottom, position_x, position_y, treasure_id)
 VALUES
     ('e61b61ef-6a44-4a94-bb52-97f60e3c5677', 'CROSSPOINT', false, false, true, false, 2, 0, 'd5a7b8b0-6b5f-11ec-90d6-0242ac120003'),
     ('0c823ec2-bc91-4e26-84b8-bb063e9692f7', 'CROSSPOINT', false, false, true, false, 4, 0, 'd5a7b8b0-6b5f-11ec-90d6-0242ac120004'),
@@ -189,4 +195,3 @@ INSERT INTO players (id, name, is_logged_in, position_x, position_y, game_id, ti
 VALUES ('f8f9a0b1-6b5f-11ec-90d6-0242ac120004', 'Player 2', TRUE, -1, -1, NULL,
         NULL, NULL);
 
-*/

@@ -1,92 +1,68 @@
 package com.example.doolhof.domeinen;
 
+import com.example.doolhof.repository.TreasureRepository;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity(name = "tiles")
 public class Tile {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @OneToOne
-    private Treasure treasure; // item (schat? ja/nee object)
+    private Treasure treasure;
 
-    //@JsonIgnore
-    //@ManyToOne
-    //@JoinColumn(name = "game_id")
-    //private Game game;
     @JsonIgnore
-    @ManyToMany(mappedBy = "tiles")
-    private Set<Game> games;
-
-    //@ManyToOne
-    //@JoinColumn(name = "board_id")
-    //private Board board;
-
+    @ManyToOne
+    private Game game;
 
     @Column(name = "is_wall_left")
     private boolean isWallLeft;
 
-    @Column(name = "is_wall_l_right")
-    private boolean isWallLRight;
+    @Column(name = "is_wall_right")
+    private boolean isWallRight;
 
-    @Column(name = "is_wall_l_top")
-    private boolean isWallLTop;
+    @Column(name = "is_wall_top")
+    private boolean isWallTop;
 
-    @Column(name = "is_wall_l_bottom")
-    private boolean isWallLBottom;
+    @Column(name = "is_wall_bottom")
+    private boolean isWallBottom;
 
-
-    // Todo: hieronder properties kunnen problemen zorgen met veel op veel relatie met Game
-    // alles naar tussenentiteit verplaatsen
-    @Column(name = "POSITION_X")
+    @Column(name = "position_x")
     private int positionX;
 
-    @Column(name = "POSITION_Y")
+    @Column(name = "position_y")
     private int positionY;
 
     @Enumerated(EnumType.STRING)
     private Path path;
 
-
+    // Default constructor (required by JPA)
     public Tile() {
     }
 
+    // Constructor for creating Tile with a specific path
     public Tile(Path path) {
-        this.treasure = null;
         this.path = path;
-        configureTileSides(path); // default at initial
+        configureTileSides(path);
     }
 
-
+    // Constructor for creating Tile with a specific path and treasure
     public Tile(Path path, Treasure treasure) {
         this.treasure = treasure;
         this.path = path;
         configureTileSides(path);
     }
 
-    public Tile(Path path, Treasure treasure, int direction) {
-        this.treasure = treasure;
-        this.path = path;
-        configureTileSides(path);
-    }
-
-
-    public int getPositionX() {
-        return positionX;
-    }
-
-    public void setPositionX(int positionX) {
-        this.positionX = positionX;
-    }
-    //    configureTileSides(path); // default at initial
-    //}
-
-
+    // Getters and setters
     public UUID getId() {
         return id;
     }
@@ -103,28 +79,28 @@ public class Tile {
         isWallLeft = wallLeft;
     }
 
-    public boolean isWallLRight() {
-        return isWallLRight;
+    public boolean isWallRight() {
+        return isWallRight;
     }
 
-    public void setWallLRight(boolean wallLRight) {
-        isWallLRight = wallLRight;
+    public void setWallRight(boolean wallRight) {
+        isWallRight = wallRight;
     }
 
-    public boolean isWallLBottom() {
-        return isWallLBottom;
+    public boolean isWallTop() {
+        return isWallTop;
     }
 
-    public void setWallLBottom(boolean wallLBottom) {
-        isWallLBottom = wallLBottom;
+    public void setWallTop(boolean wallTop) {
+        isWallTop = wallTop;
     }
 
-    public boolean isWallLTop() {
-        return isWallLTop;
+    public boolean isWallBottom() {
+        return isWallBottom;
     }
 
-    public void setWallLTop(boolean wallLTop) {
-        isWallLTop = wallLTop;
+    public void setWallBottom(boolean wallBottom) {
+        isWallBottom = wallBottom;
     }
 
     public Path getPath() {
@@ -133,6 +109,15 @@ public class Tile {
 
     public void setPath(Path path) {
         this.path = path;
+        //configureTileSides(path);
+    }
+
+    public int getPositionX() {
+        return positionX;
+    }
+
+    public void setPositionX(int positionX) {
+        this.positionX = positionX;
     }
 
     public int getPositionY() {
@@ -143,44 +128,14 @@ public class Tile {
         this.positionY = positionY;
     }
 
-    // DEFAULT position of path / roads
-    private void configureTileSides(Path path) {
-        switch (path) {
-            case STRAIGHT:
-                this.isWallLeft = false; // muur
-                this.isWallLRight = false; // muur
-                this.isWallLTop = true; // doorgang
-                this.isWallLBottom = true; // doorgang
-                break;
-            case CORNER:
-                this.isWallLeft = true;
-                this.isWallLRight = false;
-                this.isWallLTop = true;
-                this.isWallLBottom = false;
-                break;
-            case CROSSPOINT:
-                this.isWallLeft = true;
-                this.isWallLRight = false;
-                this.isWallLTop = true;
-                this.isWallLBottom = true;
-                break;
-        }
-    }
-
-
     public Treasure getTreasure() {
         return treasure;
     }
 
-    public Set<Game> getGames() {
-        return games;
+    public void setTreasure(Treasure treasure) {
+        this.treasure = treasure;
     }
 
-    public void setGames(Set<Game> games) {
-        this.games = games;
-    }
-
-    /*
     public Game getGame() {
         return game;
     }
@@ -189,20 +144,30 @@ public class Tile {
         this.game = game;
     }
 
-    public void setTreasure(Treasure treasure) {
-        this.treasure = treasure;
+    // Configure the sides of the tile based on the path
+
+    private void configureTileSides(Path path) {
+        switch (path) {
+            case STRAIGHT:
+                this.isWallLeft = false;
+                this.isWallRight = false;
+                this.isWallTop = true;
+                this.isWallBottom = true;
+                break;
+            case CORNER:
+                this.isWallLeft = true;
+                this.isWallRight = false;
+                this.isWallTop = true;
+                this.isWallBottom = false;
+                break;
+            case CROSSPOINT:
+                this.isWallLeft = true;
+                this.isWallRight = false;
+                this.isWallTop = true;
+                this.isWallBottom = true;
+                break;
+        }
     }
 
-     */
 
-    /*
-    public Board getBoard() {
-        return board;
-    }
-
-    public void setBoard(Board board) {
-        this.board = board;
-    }
-
-     */
 }

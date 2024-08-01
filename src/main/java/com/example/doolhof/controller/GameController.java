@@ -2,7 +2,6 @@ package com.example.doolhof.controller;
 
 import com.example.doolhof.controller.request.InviteRequest;
 import com.example.doolhof.controller.request.AcceptInviteRequest;
-import com.example.doolhof.controller.request.PlayerActionRequest;
 import com.example.doolhof.domeinen.Game;
 import com.example.doolhof.exception.NotAuthorizedException;
 import com.example.doolhof.exception.NotFoundException;
@@ -65,7 +64,7 @@ public class GameController {
     //-Uitgenodigde moet ingelogd zijn wanneer hij een uitnodiging krijgt want als uitgenodigde niet
     // bestaat zal de uitnodiging ook niet kunnen gestuurd worden.
     // Hij zal naar uitnodiging pagina moeten navigeren en zal een lijst van uitnodiging zien
-    // in de frontend. Hij kan dan al niet accepteren.
+    // in de frontend. Hij kan al dan niet accepteren.
     @PutMapping("/{game_id}")
     public ResponseEntity<Game> invitePlayerToGame(@PathVariable UUID game_id, @RequestBody InviteRequest player) {
         try {
@@ -87,6 +86,7 @@ public class GameController {
         }
     }
 
+
     @PutMapping("{game_id}/start")
     public ResponseEntity<Game> startGame(@PathVariable UUID game_id, @RequestBody UUID player_id) {
         try {
@@ -100,11 +100,16 @@ public class GameController {
         }
     }
 
+
+
+    /*
     @PutMapping("{game_id}/step")
     public ResponseEntity<Game> playerTakesAction(@PathVariable UUID game_id, @RequestBody PlayerActionRequest playerAction) {
         try {
             gameService.takeAStep(game_id, playerAction.getPlayerId(), playerAction.getSteps());
         }
     }
+*/
+
 
 }

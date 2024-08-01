@@ -16,11 +16,20 @@ public class Player {
 
 
     // één speler heeft meerdere kaarten
-    @OneToMany(mappedBy = "player", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Card> cards;
+    //@OneToMany(mappedBy = "player", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    //private List<Card> cards;
 
+    @ManyToMany
+    @JoinTable(
+            name = "player_cards",
+            joinColumns = @JoinColumn(name = "player_id"),
+            inverseJoinColumns = @JoinColumn(name = "card_id")
+    )
+    private Set<Card> cards;
+
+    // schat die hij/zij moet zoeken
     @OneToOne
-    private Card current_objective; // schat die hij/zij moet zoeken
+    private Card currentObjective;
 
     @OneToOne
     private Tile tile; // 1 tegel per speler
@@ -34,7 +43,10 @@ public class Player {
     private String name;
 
     // Afwerken? Zie oo PlayerActionRequest
-    private List<Step> steps;
+    //private List<Step> steps;
+
+    @Column(nullable = true)
+    int latestRoundPlayed;
 
     @Column()
     private boolean isLoggedIn;
@@ -44,8 +56,10 @@ public class Player {
 
     @Column(name = "POSITION_Y")
     private int positionY;
-    // current card  )-> schat die we zoeken
 
+    public Player(){
+        setLatestRoundPlayed(0);
+    }
 
     // lijst van verschillende gameId die speler kan deelnemen
     @ElementCollection
@@ -54,11 +68,22 @@ public class Player {
     private Set<String> invites;
 
 
+    /*
     public List<Card> getCards() {
         return cards;
     }
 
     public void setCards(List<Card> cards) {
+        this.cards = cards;
+    }
+
+     */
+
+    public Set<Card> getCards() {
+        return cards;
+    }
+
+    public void setCards(Set<Card> cards) {
         this.cards = cards;
     }
 
@@ -70,12 +95,12 @@ public class Player {
         this.id = id;
     }
 
-    public Card getCurrent_objective() {
-        return current_objective;
+    public Card getCurrentObjective() {
+        return currentObjective;
     }
 
-    public void setCurrent_objective(Card current_objective) {
-        this.current_objective = current_objective;
+    public void setCurrentObjective(Card current_objective) {
+        this.currentObjective = current_objective;
     }
 
     public Tile getTile() {
@@ -132,5 +157,13 @@ public class Player {
 
     public void setInvites(Set<String> invites) {
         this.invites = invites;
+    }
+
+    public int getLatestRoundPlayed() {
+        return latestRoundPlayed;
+    }
+
+    public void setLatestRoundPlayed(int latestRoundPlayed) {
+        this.latestRoundPlayed = latestRoundPlayed;
     }
 }

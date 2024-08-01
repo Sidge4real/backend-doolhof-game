@@ -13,21 +13,21 @@ public class Card {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    // @JsonIgnore
-    // @ManyToOne
-    // @JoinColumn(name = "game_id")
-    // private Game game;
-
     @JsonIgnore
     @ManyToMany(mappedBy = "cards")
     private Set<Game> games;
 
-    @ManyToOne
-    @JoinColumn(name = "player_id")
-    private Player player;
+    //@ManyToOne
+    //@JoinColumn(name = "player_id")
+    //private Player player;
 
+    @JsonIgnore
+    @ManyToMany(mappedBy = "cards")
+    private Set<Player> players;
+
+    // item (schat object)
     @OneToOne
-    private Treasure treasure;     // item (schat object)
+    private Treasure treasure;
 
     public Card() {
     }
@@ -58,6 +58,4 @@ public class Card {
     }
 
      */
-
-
 }
