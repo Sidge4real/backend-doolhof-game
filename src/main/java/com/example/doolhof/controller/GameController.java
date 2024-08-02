@@ -2,6 +2,7 @@ package com.example.doolhof.controller;
 
 import com.example.doolhof.controller.request.InviteRequest;
 import com.example.doolhof.controller.request.AcceptInviteRequest;
+import com.example.doolhof.controller.request.PlayerActionRequest;
 import com.example.doolhof.domeinen.Game;
 import com.example.doolhof.exception.NotAuthorizedException;
 import com.example.doolhof.exception.NotFoundException;
@@ -102,14 +103,19 @@ public class GameController {
 
 
 
-    /*
+
     @PutMapping("{game_id}/step")
     public ResponseEntity<Game> playerTakesAction(@PathVariable UUID game_id, @RequestBody PlayerActionRequest playerAction) {
         try {
-            gameService.takeAStep(game_id, playerAction.getPlayerId(), playerAction.getSteps());
+            Game game = gameService.takeAStep(game_id, playerAction.getPlayerId(), playerAction.getSteps());
+            return ResponseEntity.ok(game);
+        }catch(NotFoundException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }catch(NotAuthorizedException e){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
+
     }
-*/
 
 
 }

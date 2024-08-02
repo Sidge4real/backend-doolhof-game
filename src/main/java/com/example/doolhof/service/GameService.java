@@ -173,35 +173,75 @@ public class GameService {
 
 
 
-    public Game takeAStep(UUID game_id, UUID player_id, List<Step> steps){
+    public Game takeAStep(UUID game_id, UUID player_id, List<Step> playerSteps) {
         Optional<Game> reqGame = gameRepository.findById(game_id);
         Optional<Player> reqPlayer = playerRepository.findById(player_id);
 
-        if(reqGame.isEmpty()){
+        if (reqGame.isEmpty()) {
             throw new NotFoundException("spel niet gevonden");
         }
-        if(reqPlayer.isEmpty()){
+        if (reqPlayer.isEmpty()) {
             throw new NotFoundException("speler niet gevonden");
         }
         Game game = reqGame.get();
         Player player = reqPlayer.get();
         List<Player> gamePlayers = game.getPlayers();
 
-        for(Player checkPlayer : gamePlayers){
-            if(!player.equals(checkPlayer)){
-                throw new NotAuthorizedException("Speler neemt geen deel aan het spel!");
-            }
+        if (!gamePlayers.contains(player)) {
+            throw new NotAuthorizedException("Speler neemt geen deel aan het spel!");
         }
-        if(game.getRound() <= player.getLatestRoundPlayed())
-        {
+
+        if (game.getRound() != player.getLatestRoundPlayed() + 1) {
             throw new NotAuthorizedException("Speler heeft ronde al gespeeeld");
         }
-        // controle mag die stap gedaan worden?
-        for(Step step : steps){
 
+        int boardWidth = 6;
+        int boardHeight = 6; // index waarde!
+
+        for (Step step : playerSteps) {
+            // Boundary check
+            if (step.getEndX() < 0 || step.getEndX() >= boardWidth || step.getEndY() < 0 || step.getEndY() >= boardHeight) {
+                throw new NotAuthorizedException("Ongeldige stap: stap is buiten de grenzen van het bord.");
+            }
+
+            Tile startTile = game.getTile(step.getStartX(), step.getStartY());
+            Tile endTile = game.getTile(step.getEndX(), step.getEndX());
+            int deltaX = step.getEndX() - step.getStartX();
+            int deltaY = step.getEndY() - step.getStartY();
+
+            if(deltaX != 0 && deltaX != 1 && deltaX != -1){
+                throw new NotAuthorizedException("elke stap mag maar 1 tegel verzet worden");
+            }
+            if(deltaY != 0 && deltaY != 1 && deltaY != -1){
+
+            }
+            // Wall check
+            if (deltaX == 1 && startTile.isWallRight()) {
+                throw new NotAuthorizedException("Ongeldige stap: kan niet naar rechts bewegen door een muur.");
+            } else if (deltaX == -1 && startTile.isWallLeft()) {
+                throw new NotAuthorizedException("Ongeldige stap: kan niet naar links bewegen door een muur.");
+            } else if (deltaY == 1 && startTile.isWallBottom()) {
+                throw new NotAuthorizedException("Ongeldige stap: kan niet naar beneden bewegen door een muur.");
+            } else if (deltaY == -1 && startTile.isWallTop()) {
+                throw new NotAuthorizedException("Ongeldige stap: kan niet naar boven bewegen door een muur.");
+            }
+
+            // Wall check
+            if (deltaX == 1 && endTile.isWallLeft()) {
+                throw new NotAuthorizedException("Ongeldige stap: kan niet naar rechts bewegen door een muur.");
+            } else if (deltaX == -1 && endTile.isWallRight()) {
+                throw new NotAuthorizedException("Ongeldige stap: kan niet naar links bewegen door een muur.");
+            } else if (deltaY == 1 && endTile.isWallTop()) {
+                throw new NotAuthorizedException("Ongeldige stap: kan niet naar beneden bewegen door een muur.");
+            } else if (deltaY == -1 && endTile.isWallBottom()) {
+                throw new NotAuthorizedException("Ongeldige stap: kan niet naar boven bewegen door een muur.");
+            }
         }
 
-        return null;
+        // Als alle stappen geldig zijn, kun je doorgaan met het verwerken van het spel
+        // (bijvoorbeeld de speler verplaatsen naar de nieuwe positie en de spelstatus bijwerken)
+
+        return game; // of een andere logische waarde gebaseerd op de context
     }
 
 

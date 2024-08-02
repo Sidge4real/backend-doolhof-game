@@ -20,42 +20,6 @@ public class TileService {
     private List<Point> coordinates = new ArrayList<>();
     private final Random random = new Random();
 
-    /*
-    (0,1)
-(0,3)
-(0,5)
-(1,0)
-(1,1)
-(1,2)
-(1,3)
-(1,4)
-(1,5)
-(1,6)
-(2,1)
-(2,3)
-(2,5)
-(3,0)
-(3,1)
-(3,2)
-(3,3)
-(3,4)
-(3,5)
-(3,6)
-(4,1)
-(4,3)
-(4,5)
-(5,0)
-(5,1)
-(5,2)
-(5,3)
-(5,4)
-(5,5)
-(5,6)
-(6,1)
-(6,3)
-(6,5)
-
-    * */
     @Autowired
     public TileService(TreasureRepository treasureRepository) {
         this.treasureRepository = treasureRepository;
@@ -74,7 +38,7 @@ public class TileService {
     }
 
     // Methode om handmatig coördinaten toe te voegen
-    public void addManualCoordinates() {
+    private void addManualCoordinates() {
         coordinates.add(new Point(0, 1));
         coordinates.add(new Point(0, 3));
         coordinates.add(new Point(0, 5));
@@ -135,55 +99,32 @@ public class TileService {
     }
 
     private boolean[] generateRandomWalls(Path path) {
-        boolean[] walls;
+        boolean[][] configurations;
 
         switch (path) {
             case CROSSPOINT:
-                // CROSSPOINT heeft altijd 1 muur en 3 lege zijden
-                walls = new boolean[]{true, false, false, false}; // Begin met één muur
-                shuffleArray(walls); // Schud de array om een willekeurige configuratie te krijgen
+                configurations = new boolean[][]{{true, false, false, false}};
+                shuffleArray(configurations[0]);
                 break;
             case CORNER:
-                // CORNER kan 4 configuraties hebben, elk met 2 muren
-                int cornerConfiguration = random.nextInt(4); // Kies een van de 4 configuraties
-
-                switch (cornerConfiguration) {
-                    case 0:
-                        walls = new boolean[]{true, false, true, false}; // Links en boven muur
-                        break;
-                    case 1:
-                        walls = new boolean[]{false, true, true, false}; // Rechts en boven muur
-                        break;
-                    case 2:
-                        walls = new boolean[]{false, true, false, true}; // Rechts en onder muur
-                        break;
-                    case 3:
-                        walls = new boolean[]{true, false, false, true}; // Links en onder muur
-                        break;
-                    default:
-                        throw new IllegalArgumentException("Unexpected configuration for CORNER");
-                }
+                configurations = new boolean[][]{
+                        {true, false, true, false},
+                        {false, true, true, false},
+                        {false, true, false, true},
+                        {true, false, false, true}
+                };
                 break;
             case STRAIGHT:
-                // STRAIGHT kan 2 configuraties hebben
-                int straightConfiguration = random.nextInt(2); // Kies een van de 2 configuraties
-
-                switch (straightConfiguration) {
-                    case 0:
-                        walls = new boolean[]{true, true, false, false}; // Links en rechts muur
-                        break;
-                    case 1:
-                        walls = new boolean[]{false, false, true, true}; // Boven en onder muur
-                        break;
-                    default:
-                        throw new IllegalArgumentException("Unexpected configuration for STRAIGHT");
-                }
+                configurations = new boolean[][]{
+                        {true, true, false, false},
+                        {false, false, true, true}
+                };
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported path type: " + path);
         }
 
-        return walls;
+        return configurations[random.nextInt(configurations.length)];
     }
 
     // Methode om een array te schudden
@@ -263,3 +204,40 @@ public class TileService {
 
 
 }
+
+    /*
+    (0,1)
+(0,3)
+(0,5)
+(1,0)
+(1,1)
+(1,2)
+(1,3)
+(1,4)
+(1,5)
+(1,6)
+(2,1)
+(2,3)
+(2,5)
+(3,0)
+(3,1)
+(3,2)
+(3,3)
+(3,4)
+(3,5)
+(3,6)
+(4,1)
+(4,3)
+(4,5)
+(5,0)
+(5,1)
+(5,2)
+(5,3)
+(5,4)
+(5,5)
+(5,6)
+(6,1)
+(6,3)
+(6,5)
+
+    * */

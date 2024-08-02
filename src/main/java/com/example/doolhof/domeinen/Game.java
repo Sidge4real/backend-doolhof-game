@@ -1,5 +1,6 @@
 package com.example.doolhof.domeinen;
 
+import com.example.doolhof.exception.NotFoundException;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -103,5 +104,14 @@ public class Game {
 
     public void setRound(int round) {
         this.round = round;
+    }
+
+    public Tile getTile(int x, int y){
+        for(Tile tile : getTiles()){
+            if(tile.getPositionX() == x && tile.getPositionY() == y){
+                return tile;
+            }
+        }
+        throw new NotFoundException("Gevraagde tegel is niet gevonden!");
     }
 }
