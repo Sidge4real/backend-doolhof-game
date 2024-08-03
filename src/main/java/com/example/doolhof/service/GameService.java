@@ -200,12 +200,17 @@ public class GameService {
         Player player = reqPlayer.get();
         List<Player> gamePlayers = game.getPlayers();
 
+
         if (!gamePlayers.contains(player)) {
             throw new NotAuthorizedException("Speler neemt geen deel aan het spel!");
         }
 
         if (game.getRound() != player.getLatestRoundPlayed() + 1) {
             throw new NotAuthorizedException("Speler heeft ronde al gespeeeld");
+        }
+
+        if(player.getTile() != null){
+            throw new NotAuthorizedException("Je hebt nog geen tegel verplaatst!");
         }
 
         int boardWidth = 6;
@@ -254,6 +259,22 @@ public class GameService {
         // Als alle stappen geldig zijn, kun je doorgaan met het verwerken van het spel
         // (bijvoorbeeld de speler verplaatsen naar de nieuwe positie en de spelstatus bijwerken)
 
+        player.setLatestRoundPlayed(player.getLatestRoundPlayed()+1);
+        Player nextPlayer = null;
+        for (int i = 0; i < gamePlayers.size(); i++) {
+            if (player == gamePlayers.get(i)) {
+                if (i == gamePlayers.size() - 1) {
+                    // Als de huidige speler de laatste speler is
+                    nextPlayer = gamePlayers.get(0);
+                } else {
+                    // Anders, de volgende speler in de lijst
+                    nextPlayer = gamePlayers.get(i + 1);
+                }
+                break; // Stop met itereren, aangezien we de currentPlayer hebben gevonden
+            }
+        }
+        game.setCurrentPlayer(nextPlayer);
+
         return game; // of een andere logische waarde gebaseerd op de context
 
 
@@ -275,8 +296,17 @@ public class GameService {
 
 
         Game game = reqGame.get();
+        List<Player> gamePlayers = game.getPlayers();
         Player player = reqPlayer.get();
         Player currentPlayer = game.getCurrentPlayer();
+
+        if (!gamePlayers.contains(player)) {
+            throw new NotAuthorizedException("Speler neemt geen deel aan het spel!");
+        }
+
+        if (game.getRound() != player.getLatestRoundPlayed() + 1) {
+            throw new NotAuthorizedException("Speler heeft ronde al gespeeeld");
+        }
 
         if(currentPlayer != player){
             throw new NotFoundException("Deze speler is niet aan de beurt!");
