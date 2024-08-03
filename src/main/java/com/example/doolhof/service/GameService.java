@@ -8,6 +8,7 @@ import com.example.doolhof.repository.GameRepository;
 import com.example.doolhof.repository.PlayerRepository;
 import com.example.doolhof.repository.TileRepository;
 import jakarta.transaction.Transactional;
+import jakarta.validation.constraints.Null;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -167,6 +168,18 @@ public class GameService {
             }
             selectedPlayer.setCards(playerCards);
         }
+
+        for(Tile tile : game.getTiles()){
+            if(tile.getPositionY() == -1 && tile.getPositionX() == -1){
+                player.setTile(tile);
+                List<Tile> tiles = game.getTiles();
+                tiles.remove(tile);
+                game.setTiles(tiles);  // Als er een setTiles() methode is
+                List<Tile> newTiles = game.getTiles();
+                game.setTiles(newTiles);
+            }
+        }
+
         gameRepository.save(game);
         return game;
     }
@@ -242,6 +255,123 @@ public class GameService {
         // (bijvoorbeeld de speler verplaatsen naar de nieuwe positie en de spelstatus bijwerken)
 
         return game; // of een andere logische waarde gebaseerd op de context
+
+
+        // VOLGENDE OPDRACHT: Inbrengen tile en distributie van de tegels in een zet
+        // eerst tegel verplaatsen en dan pas speler verplaatsen
+    }
+
+
+    public Game moveTiles(UUID game_id, UUID player_id, int tileChangePosX, int tileChangePosY, String direction){
+        Optional<Game> reqGame = gameRepository.findById(game_id);
+        Optional<Player> reqPlayer = playerRepository.findById(player_id);
+
+        if(reqGame.isEmpty()){
+            throw new NotFoundException("Spel is niet gevonden");
+        }
+        if(reqPlayer.isEmpty()){
+            throw new NotFoundException("Speler is niet gevonden");
+        }
+
+
+        Game game = reqGame.get();
+        Player player = reqPlayer.get();
+        Player currentPlayer = game.getCurrentPlayer();
+
+        if(currentPlayer != player){
+            throw new NotFoundException("Deze speler is niet aan de beurt!");
+        }
+
+        List<Player> players = game.getPlayers();
+        Player nextPlayer = null;
+
+        for (int i = 0; i < players.size(); i++) {
+            if (currentPlayer == players.get(i)) {
+                if (i == players.size() - 1) {
+                    // Als de huidige speler de laatste speler is
+                    nextPlayer = players.get(0);
+                } else {
+                    // Anders, de volgende speler in de lijst
+                    nextPlayer = players.get(i + 1);
+                }
+                break; // Stop met itereren, aangezien we de currentPlayer hebben gevonden
+            }
+        }
+
+        if(tileChangePosX % 2 == 0){
+            throw new NotAuthorizedException("Speler mag niet op deze tegel gaan schuiven");
+        }
+        if(tileChangePosY % 2 == 0){
+            throw new NotAuthorizedException("Speler mag niet op deze tegel gaan schuiven");
+        }
+
+        int deltaY = 0;
+        int deltaX = 0;
+        if(direction == "above"){
+            deltaY = -1;
+        }
+        else if(direction == "down"){
+            deltaY = 1;
+        }
+        else if(direction == "left"){
+            deltaX = -1;
+        }
+        else if(direction == "right"){
+            deltaX = 1;
+        }
+        else{
+            throw new IllegalArgumentException("De richting is niet correct meegegeven!");
+        }
+
+
+        List<Tile> tiles = game.getTiles();
+        Tile playerTile = player.getTile();
+        for(Tile tile : tiles){
+            currentPlayer.setTile(null); // save in gameRepo
+            player.setTile(null); // save in playerRepo
+            int tileX = tile.getPositionX();
+            int tileY = tile.getPositionY();
+            if(tileX == tileChangePosX){
+                if(tileX+deltaX > 6 || tileX+deltaX < 0){
+                    tile.setPositionX(-1);
+                    tile.setPositionY(-1);
+                    nextPlayer.setTile(tile); //volgende speler moet tile krijgen
+                    List<Tile> newTiles = tiles;
+                    newTiles.remove(tile);
+                    game.setTiles(newTiles);
+                }
+                else{
+                    tile.setPositionX(tileX+deltaX);
+                }
+
+            }
+
+            if(tileY == tileChangePosY){
+                if(tileY+deltaY > 6 || tileY+deltaY < 0){
+                    tile.setPositionX(-1);
+                    tile.setPositionY(-1);
+                    nextPlayer.setTile(tile);
+                    List<Tile> newTiles = tiles;
+                    newTiles.remove(tile);
+                    game.setTiles(newTiles);
+                }
+                else{
+                    tile.setPositionY(tileY+deltaY);
+                }
+            }
+
+            int playerX = playerTile.getPositionX();
+            int playerY = playerTile.getPositionY();
+            if(playerX == tileChangePosX && playerY == tileChangePosY){
+                tile.setPositionY(playerY);
+                tile.setPositionX(playerX);
+            }
+        }
+
+        gameRepository.save(game);
+        playerRepository.save(player);
+
+        return game;
     }
 
 

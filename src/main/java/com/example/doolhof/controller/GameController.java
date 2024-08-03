@@ -2,6 +2,7 @@ package com.example.doolhof.controller;
 
 import com.example.doolhof.controller.request.InviteRequest;
 import com.example.doolhof.controller.request.AcceptInviteRequest;
+import com.example.doolhof.controller.request.MoveTileRequest;
 import com.example.doolhof.controller.request.PlayerActionRequest;
 import com.example.doolhof.domeinen.Game;
 import com.example.doolhof.exception.NotAuthorizedException;
@@ -117,5 +118,18 @@ public class GameController {
 
     }
 
+    @PutMapping("{gale_id}/movetiles")
+    public ResponseEntity<Game> playerMovesTiles(@PathVariable UUID game_id, @RequestBody MoveTileRequest moveTileRequest){
+        try{
+            Game game = gameService.moveTiles(game_id, moveTileRequest.getPlayerId(), moveTileRequest.getTilePosX(), moveTileRequest.getTilePosY(), moveTileRequest.getDirection());
+            return ResponseEntity.ok(game);
+        }catch(IllegalArgumentException e){ // direction incorrect
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }catch(NotFoundException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }catch(NotAuthorizedException e){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+    }
 
 }

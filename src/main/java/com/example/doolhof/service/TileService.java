@@ -72,6 +72,7 @@ public class TileService {
         coordinates.add(new Point(6, 1));
         coordinates.add(new Point(6, 3));
         coordinates.add(new Point(6, 5));
+        coordinates.add(new Point(-1, -1));
     }
 
     // Method to add tiles to the game board
